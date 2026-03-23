@@ -17,33 +17,33 @@ The UI is responsive and includes dark/light mode support, skeleton loading stat
 ## Features
 
 - Dashboard with key metrics:
-	- Total books
-	- Available books
-	- Active members
-	- Active issues
-	- Overdue books
-	- Total fines collected
+  - Total books
+  - Available books
+  - Active members
+  - Active issues
+  - Overdue books
+  - Total fines collected
 - Books management:
-	- Add, list, search, update, delete
+  - Add, list, search, update, delete
 - Members management:
-	- Add, list, search, update, delete
+  - Add, list, search, update, delete
 - Issued books management:
-	- Issue books
-	- Return books
-	- Filter by active/returned/all
+  - Issue books
+  - Return books
+  - Filter by active/returned/all
 - Overdue management:
-	- List overdue books
-	- Auto fine calculation
-	- Process overdue return
+  - List overdue books
+  - Auto fine calculation
+  - Process overdue return
 - Reports:
-	- Issuance status chart
-	- Book availability/issued chart
-	- Summary statistics
+  - Issuance status chart
+  - Book availability/issued chart
+  - Summary statistics
 - UX polish:
-	- Mobile sidebar sheet
-	- Skeleton loading states
-	- Toast feedback
-	- Theme toggle
+  - Mobile sidebar sheet
+  - Skeleton loading states
+  - Toast feedback
+  - Theme toggle
 
 ## Tech Stack
 
