@@ -1,65 +1,164 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import { StatCard } from "@/components/stat-card";
+import { Button } from "@/components/ui/button";
+import {
+  BookOpen,
+  Users,
+  BookMarked,
+  AlertCircle,
+  TrendingUp,
+} from "lucide-react";
+import type { DashboardStats } from "@/lib/db";
+import { DashboardPageSkeleton } from "@/components/page-skeletons";
+
+export default function DashboardPage() {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  async function fetchStats() {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch("/api/dashboard", { cache: "no-store" });
+      if (!response.ok) throw new Error("Failed to fetch stats");
+      const data = await response.json();
+      setStats(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+      setStats(null);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  if (loading) {
+    return <DashboardPageSkeleton />;
+  }
+
+  if (error || !stats) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-4 rounded-xl border border-dashed p-8 text-center">
+        <p className="text-destructive">Unable to load dashboard data</p>
+        <Button onClick={fetchStats} variant="outline">
+          Retry
+        </Button>
+      </div>
+    );
+  }
+
+  const issuedPercentage =
+    stats.total_books > 0 ?
+      Math.round(
+        ((stats.total_books - stats.available_books) / stats.total_books) * 100,
+      )
+    : 0;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="space-y-8">
+      <div className="rounded-xl border bg-linear-to-br from-secondary/60 to-background p-6">
+        <h2 className="text-3xl font-bold tracking-tight">Welcome Back</h2>
+        <p className="text-muted-foreground">
+          Here's an overview of your library's status.
+        </p>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <StatCard
+          title="Total Books"
+          value={stats.total_books}
+          description="Books in inventory"
+          icon={<BookOpen className="h-4 w-4" />}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+        <StatCard
+          title="Available Books"
+          value={stats.available_books}
+          description={`${issuedPercentage}% of books issued`}
+          icon={<TrendingUp className="h-4 w-4" />}
+        />
+        <StatCard
+          title="Active Members"
+          value={stats.total_members}
+          description="Currently active"
+          icon={<Users className="h-4 w-4" />}
+        />
+        <StatCard
+          title="Active Issues"
+          value={stats.active_issues}
+          description="Books checked out"
+          icon={<BookMarked className="h-4 w-4" />}
+        />
+        <StatCard
+          title="Overdue Books"
+          value={stats.overdue_books}
+          description="Awaiting return"
+          icon={<AlertCircle className="h-4 w-4" />}
+          trend={
+            stats.overdue_books > 0 ?
+              { value: stats.overdue_books, isPositive: false }
+            : undefined
+          }
+        />
+        <StatCard
+          title="Total Fines Collected"
+          value={`₹${stats.total_fines}`}
+          description="From returned books"
+          icon={<TrendingUp className="h-4 w-4" />}
+        />
+      </div>
+
+      {/* Summary */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="rounded-xl border bg-card p-6 shadow-sm">
+          <h3 className="font-semibold mb-2">Library Status</h3>
+          <div className="space-y-2 text-sm">
+            <p className="flex justify-between">
+              <span>Books Available:</span>
+              <span className="font-medium">
+                {stats.available_books}/{stats.total_books}
+              </span>
+            </p>
+            <p className="flex justify-between">
+              <span>Active Issues:</span>
+              <span className="font-medium">{stats.active_issues}</span>
+            </p>
+            <p className="flex justify-between">
+              <span>Overdue Books:</span>
+              <span className="font-medium text-red-600">
+                {stats.overdue_books}
+              </span>
+            </p>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="rounded-xl border bg-card p-6 shadow-sm">
+          <h3 className="font-semibold mb-2">Member Insights</h3>
+          <div className="space-y-2 text-sm">
+            <p className="flex justify-between">
+              <span>Total Members:</span>
+              <span className="font-medium">{stats.total_members}</span>
+            </p>
+            <p className="flex justify-between">
+              <span>Avg Issues per Member:</span>
+              <span className="font-medium">
+                {stats.total_members > 0 ?
+                  (stats.active_issues / stats.total_members).toFixed(2)
+                : "0"}
+              </span>
+            </p>
+            <p className="flex justify-between">
+              <span>Collection Rate:</span>
+              <span className="font-medium">₹{stats.total_fines}</span>
+            </p>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
