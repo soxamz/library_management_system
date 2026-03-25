@@ -19,9 +19,9 @@ export async function GET(_request: NextRequest) {
           THEN CEIL(EXTRACT(DAY FROM NOW() - ib.due_date)) * $1
           ELSE 0
         END as calculated_fine
-      FROM issued_books ib
-      JOIN members m ON ib.member_id = m.id
-      JOIN books b ON ib.book_id = b.id
+      FROM issued_books_5234 ib
+      JOIN members_5234 m ON ib.member_id = m.id
+      JOIN books_5234 b ON ib.book_id = b.id
       WHERE ib.return_date IS NULL AND NOW() > ib.due_date
       ORDER BY ib.due_date ASC
     `,
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     // Calculate fine based on days overdue
     const issuedResult = await db.query<{ due_date: string }>(
-      "SELECT due_date FROM issued_books WHERE id = $1",
+      "SELECT due_date FROM issued_books_5234 WHERE id = $1",
       [issued_book_id],
     );
 
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
 
     // Update issued book with return date and fine
     const result = await db.query(
-      `UPDATE issued_books
+      `UPDATE issued_books_5234
        SET return_date = $1, fine_amount = $2
        WHERE id = $3
        RETURNING *`,
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     // Update book available copies
     const issuedBook = result[0];
     await db.query(
-      "UPDATE books SET available_copies = available_copies + 1 WHERE id = $1",
+      "UPDATE books_5234 SET available_copies = available_copies + 1 WHERE id = $1",
       [issuedBook.book_id],
     );
 

@@ -11,9 +11,9 @@ export async function GET(request: NextRequest) {
 
     let query = `
       SELECT ib.id, ib.book_id, ib.member_id, ib.issue_date, ib.due_date, ib.return_date, ib.fine_amount as fine_paid, ib.created_at, m.name as member_name, b.title as book_title
-      FROM issued_books ib
-      JOIN members m ON ib.member_id = m.id
-      JOIN books b ON ib.book_id = b.id
+      FROM issued_books_5234 ib
+      JOIN members_5234 m ON ib.member_id = m.id
+      JOIN books_5234 b ON ib.book_id = b.id
     `;
 
     if (filter === "active") {
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     // Check if book is available
     const bookCheck = await db.query<{ copies_available: number }>(
-      "SELECT available_copies as copies_available FROM books WHERE id = $1",
+      "SELECT available_copies as copies_available FROM books_5234 WHERE id = $1",
       [book_id],
     );
 
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     // Create issued book record
     const result = await db.query<IssuedBook>(
-      `INSERT INTO issued_books (member_id, book_id, issue_date, due_date, fine_amount)
+      `INSERT INTO issued_books_5234 (member_id, book_id, issue_date, due_date, fine_amount)
        VALUES ($1, $2, $3, $4, 0)
        RETURNING id, book_id, member_id, issue_date, due_date, return_date, fine_amount as fine_paid, created_at`,
       [member_id, book_id, issueDate.toISOString(), dueDate.toISOString()],
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     // Update available copies
     await db.query(
-      "UPDATE books SET available_copies = available_copies - 1 WHERE id = $1",
+      "UPDATE books_5234 SET available_copies = available_copies - 1 WHERE id = $1",
       [book_id],
     );
 
@@ -88,7 +88,7 @@ export async function PUT(request: NextRequest) {
     const { id, return_date, fine_paid = 0 } = body;
 
     const result = await db.query<IssuedBook>(
-      `UPDATE issued_books
+      `UPDATE issued_books_5234
        SET return_date = $1, fine_amount = $2
        WHERE id = $3
        RETURNING id, book_id, member_id, issue_date, due_date, return_date, fine_amount as fine_paid, created_at`,
@@ -105,7 +105,7 @@ export async function PUT(request: NextRequest) {
     // Get book_id and update available copies
     const issuedBook = result[0];
     await db.query(
-      "UPDATE books SET available_copies = available_copies + 1 WHERE id = $1",
+      "UPDATE books_5234 SET available_copies = available_copies + 1 WHERE id = $1",
       [issuedBook.book_id],
     );
 

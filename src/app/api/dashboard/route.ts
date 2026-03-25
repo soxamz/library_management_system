@@ -11,7 +11,7 @@ export async function GET(_request: NextRequest) {
       total_books: number;
       available_books: number;
     }>(
-      "SELECT COALESCE(SUM(total_copies), 0) as total_books, COALESCE(SUM(available_copies), 0) as available_books FROM books",
+      "SELECT COALESCE(SUM(total_copies), 0) as total_books, COALESCE(SUM(available_copies), 0) as available_books FROM books_5234",
     );
 
     const totalBooks = Number(booksResult[0]?.total_books) || 0;
@@ -19,28 +19,28 @@ export async function GET(_request: NextRequest) {
 
     // Get total active members
     const membersResult = await db.query<{ total_members: number }>(
-      "SELECT COUNT(*) as total_members FROM members WHERE membership_status = 'active'",
+      "SELECT COUNT(*) as total_members FROM members_5234 WHERE membership_status = 'active'",
     );
 
     const totalMembers = Number(membersResult[0]?.total_members) || 0;
 
     // Get active issues
     const activeIssuesResult = await db.query<{ active_issues: number }>(
-      "SELECT COUNT(*) as active_issues FROM issued_books WHERE return_date IS NULL",
+      "SELECT COUNT(*) as active_issues FROM issued_books_5234 WHERE return_date IS NULL",
     );
 
     const activeIssues = Number(activeIssuesResult[0]?.active_issues) || 0;
 
     // Get overdue books count
     const overdueResult = await db.query<{ overdue_books: number }>(
-      "SELECT COUNT(*) as overdue_books FROM issued_books WHERE return_date IS NULL AND NOW() > due_date",
+      "SELECT COUNT(*) as overdue_books FROM issued_books_5234 WHERE return_date IS NULL AND NOW() > due_date",
     );
 
     const overdueBooks = Number(overdueResult[0]?.overdue_books) || 0;
 
     // Get total fines
     const finesResult = await db.query<{ total_fines: number }>(
-      "SELECT COALESCE(SUM(fine_amount), 0) as total_fines FROM issued_books WHERE return_date IS NOT NULL",
+      "SELECT COALESCE(SUM(fine_amount), 0) as total_fines FROM issued_books_5234 WHERE return_date IS NOT NULL",
     );
 
     const totalFines = Number(finesResult[0]?.total_fines) || 0;

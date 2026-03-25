@@ -1,5 +1,5 @@
 -- Seed Books
-INSERT INTO books (title, author, isbn, publication_year, category, total_copies, available_copies) VALUES
+INSERT INTO books_5234 (title, author, isbn, publication_year, category, total_copies, available_copies) VALUES
 ('The Great Gatsby', 'F. Scott Fitzgerald', '978-0-7432-7356-5', 1925, 'Fiction', 3, 2),
 ('To Kill a Mockingbird', 'Harper Lee', '978-0-06-112008-4', 1960, 'Fiction', 2, 1),
 ('1984', 'George Orwell', '978-0-451-52494-2', 1949, 'Dystopian', 3, 2),
@@ -12,7 +12,7 @@ INSERT INTO books (title, author, isbn, publication_year, category, total_copies
 ('Dune', 'Frank Herbert', '978-0-441-17271-9', 1965, 'Science Fiction', 3, 2);
 
 -- Seed Members
-INSERT INTO members (name, email, phone, address, membership_status) VALUES
+INSERT INTO members_5234 (name, email, phone, address, membership_status) VALUES
 ('John Smith', 'john.smith@email.com', '555-0101', '123 Main St, City', 'active'),
 ('Sarah Johnson', 'sarah.j@email.com', '555-0102', '456 Oak Ave, City', 'active'),
 ('Michael Brown', 'm.brown@email.com', '555-0103', '789 Pine Rd, City', 'active'),
@@ -23,12 +23,12 @@ INSERT INTO members (name, email, phone, address, membership_status) VALUES
 ('Lisa Taylor', 'lisa.t@email.com', '555-0108', '258 Spruce Ct, City', 'active');
 
 -- Seed Librarians
-INSERT INTO librarians (name, email, password_hash, role) VALUES
+INSERT INTO librarians_5234 (name, email, password_hash, role) VALUES
 ('Admin User', 'admin@library.com', '$2b$10$abcdefghijklmnopqrstuvwxyz123456789', 'admin'),
 ('Sarah Librarian', 'sarah@library.com', '$2b$10$abcdefghijklmnopqrstuvwxyz123456789', 'librarian');
 
 -- Seed Issued Books (some overdue, some active)
-INSERT INTO issued_books (book_id, member_id, issue_date, due_date, return_date, status, fine_amount) VALUES
+INSERT INTO issued_books_5234 (book_id, member_id, issue_date, due_date, return_date, status, fine_amount) VALUES
 (1, 1, '2025-02-15', '2025-03-15', NULL, 'issued', 0),
 (3, 2, '2025-02-10', '2025-03-10', NULL, 'issued', 50.00),
 (5, 3, '2025-02-20', '2025-03-20', NULL, 'issued', 0),

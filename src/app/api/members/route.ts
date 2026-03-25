@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search") || "";
 
     let query =
-      "SELECT id, name, email, phone, membership_date, (membership_status = 'active') as is_active, created_at FROM members";
+      "SELECT id, name, email, phone, membership_date, (membership_status = 'active') as is_active, created_at FROM members_5234";
     const params: any[] = [];
 
     if (search) {
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     const { name, email, phone } = body;
 
     const result = await db.query<Member>(
-      `INSERT INTO members (name, email, phone, membership_date, membership_status)
+      `INSERT INTO members_5234 (name, email, phone, membership_date, membership_status)
        VALUES ($1, $2, $3, NOW(), 'active')
        RETURNING id, name, email, phone, membership_date, (membership_status = 'active') as is_active, created_at`,
       [name, email, phone],
@@ -60,7 +60,7 @@ export async function PUT(request: NextRequest) {
     const { id, name, email, phone, is_active } = body;
 
     const result = await db.query<Member>(
-      `UPDATE members
+      `UPDATE members_5234
        SET name = $1, email = $2, phone = $3, membership_status = $4
        WHERE id = $5
        RETURNING id, name, email, phone, membership_date, (membership_status = 'active') as is_active, created_at`,
@@ -93,7 +93,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await db.query("DELETE FROM members WHERE id = $1", [id]);
+    await db.query("DELETE FROM members_5234 WHERE id = $1", [id]);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting member:", error);

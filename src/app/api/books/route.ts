@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search") || "";
 
     let query =
-      "SELECT id, title, author, isbn, publication_year, total_copies, available_copies as copies_available, created_at FROM books";
+      "SELECT id, title, author, isbn, publication_year, total_copies, available_copies as copies_available, created_at FROM books_5234";
     const params: any[] = [];
 
     if (search) {
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     const { title, author, isbn, publication_year, total_copies } = body;
 
     const result = await db.query(
-      `INSERT INTO books (title, author, isbn, publication_year, total_copies, available_copies)
+      `INSERT INTO books_5234 (title, author, isbn, publication_year, total_copies, available_copies)
        VALUES ($1, $2, $3, $4, $5, $5)
        RETURNING id, title, author, isbn, publication_year, total_copies, available_copies as copies_available, created_at`,
       [
@@ -66,7 +66,7 @@ export async function PUT(request: NextRequest) {
     const { id, title, author, isbn, publication_year, total_copies } = body;
 
     const result = await db.query(
-      `UPDATE books
+      `UPDATE books_5234
        SET title = $1, author = $2, isbn = $3,
            publication_year = $4, total_copies = $5
        WHERE id = $6
@@ -100,7 +100,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await db.query("DELETE FROM books WHERE id = $1", [id]);
+    await db.query("DELETE FROM books_5234 WHERE id = $1", [id]);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting book:", error);
